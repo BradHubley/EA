@@ -1,8 +1,8 @@
 #' @export 
 
   EAmap = function( xyz, depths=T, pts=NULL, colpts=F, annot=NULL, annot.cex=2.2, scalebar = T, projection = "utm20", col.regions=T, datascale=seq(0,1,l=50), at=datascale,
-                fn=paste("map", trunc(runif(1)*1e8), sep=""), loc=tempdir(), corners=NULL, rez=c(1,1), display=F, pt.cex=0.5, 
-                pt.pch=16, pt.col='black',colorkey=NULL, fill=T, log.variable=F, interpolation=F, add.zeros=F, theta=50, rev=F, ... ) {
+                fn=paste("map", trunc(runif(1)*1e8), sep=""), loc=tempdir(), corners=NULL, rez=c(1,1), save=F, pt.cex=0.5, 
+                pt.pch=16, pt.col='black',colorkey=NULL, fill=T, log.variable=F, interpolation=F, add.zeros=F, theta=50, rev=F, load.data=F, ... ) {
 
     # map using levelplot 
 
@@ -114,14 +114,14 @@
 
         # depth isobaths
         if (!is.null(depths)) {
-          load("data/isobaths.rdata") 
+          if(load.data)load("data/isobaths.rdata") 
           #isoBaths = bio.bathymetry::isobath.db( p=p, depths=depths, crs=p$internal.crs )
           sp.lines( isoBaths , col = rgb(0.2,0.2,0.2,0.5), cex=0.6 )
           #for ( i in depths ) sp.lines( isoBaths[as.character(i) ] , col = rgb(0.2,0.2,0.2,0.5), cex=0.6 )
         }
 
         #coastline
-        load("data/coastline.rdata")
+        if(load.data)load("data/coastline.rdata")
         #coastLine = bio.coastline::coastline.db(p=p, crs=p$internal.crs)
         sp.polygons( coastLine, col = "black", cex=1 ,fill='grey')
 
@@ -136,13 +136,17 @@
     } # end panel
     ) # end levelplot
 
-    if(display)print(lp)
+    if(save){
 
-    dir.create (loc, showWarnings=FALSE, recursive =TRUE)
-    fn = file.path( loc, paste(fn, "png", sep="." ) )
-    png(  filename=fn, width=3072, height=2304, pointsize=40, res=300 )
-    print(lp)
-    dev.off()
+      dir.create (loc, showWarnings=FALSE, recursive =TRUE)
+      fn = file.path( loc, paste(fn, "png", sep="." ) )
+      png(  filename=fn, width=3072, height=2304, pointsize=40, res=300 )
+      print(lp)
+      dev.off()
+    } 
+    else{
+      print(lp)
+    }
 
     return( fn )
 

@@ -23,6 +23,7 @@
 
 # set wd
 setwd("/home/hubleyb/bio/EA/")
+options(stringsAsFactor=F)
 
 # basic R packages
 library(sp)
@@ -123,7 +124,7 @@ load_all() # loads functions
 	datascale = seq(10,1000,l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Depth", loc="output", datascale=datascale , corners=corners, log.variable=T, display=T,rev=T)
+	EAmap( xyz, fn="Depth", loc="output", datascale=datascale , corners=corners, log.variable=T,rev=T)
 
 
 	# Slope
@@ -133,7 +134,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Slope", loc="output", datascale=datascale , corners=corners, display=T,log.variable=T)
+	EAmap( xyz, fn="Slope", loc="output", datascale=datascale , corners=corners,log.variable=T)
 
 	# Curvature
 	xyz = predSpace[c('plon','plat','ddZ')]
@@ -142,7 +143,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Curvature", loc="output", datascale=datascale , corners=corners, display=T,log.variable=T)
+	EAmap( xyz, fn="Curvature", loc="output", datascale=datascale , corners=corners,log.variable=T)
 
   
 
@@ -155,7 +156,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 		corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Grain.Size", loc="output", datascale=datascale , corners=corners, display=T)
+	EAmap( xyz, fn="Grain.Size", loc="output", datascale=datascale , corners=corners)
 
 
 	# Temperature
@@ -167,7 +168,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tmean.climatology", loc="output", datascale=datascale , corners=corners, display=T)
+	EAmap( xyz, fn="tmean.climatology", loc="output", datascale=datascale , corners=corners)
 
 	# Climatology sd
 	xyz = predSpace[c('plon','plat','tsd.climatology')]
@@ -176,7 +177,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tsd.climatology", loc="output", datascale=datascale , corners=corners, display=T)
+	EAmap( xyz, fn="tsd.climatology", loc="output", datascale=datascale , corners=corners)
 
 	# Climatology min
 	xyz = predSpace[c('plon','plat','tmin.climatology')]
@@ -185,7 +186,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tmin.climatology", loc="output", datascale=datascale , corners=corners, display=T)
+	EAmap( xyz, fn="tmin.climatology", loc="output", datascale=datascale , corners=corners)
 
 	# Climatology max
 	xyz = predSpace[c('plon','plat','tmax.climatology')]
@@ -194,7 +195,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tmax.climatology", loc="output", datascale=datascale , corners=corners, display=T)
+	EAmap( xyz, fn="tmax.climatology", loc="output", datascale=datascale , corners=corners)
 
 	# Climatology amplitude
 	xyz = predSpace[c('plon','plat','amplitude.climatology')]
@@ -203,7 +204,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="amplitude.climatology", loc="output", datascale=datascale , corners=corners, display=T)
+	EAmap( xyz, fn="amplitude.climatology", loc="output", datascale=datascale , corners=corners)
 
 
 ## 	Species distribution / Habitat suitability models
@@ -244,7 +245,7 @@ load_all() # loads functions
 		dat = silverhakeRV
 		dat = halibutRV
 		dat$Y = ifelse(dat$totwgt>0,1,0)
-		dat$dyear = decimal_date(dat$sdate)
+		dat$dyear = decimal_date(as.Date(dat$sdate))
 		dat$t = dat$bottom_temperature
 
 		dat.p = subset(dat,Y==1)
@@ -259,7 +260,7 @@ load_all() # loads functions
 
 		corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-		EAmap( xyz, fn="lobster.biocl.pred", loc="output",corners=corners, display=T)
+		EAmap( xyz, fn="lobster.biocl.pred", loc="output",corners=corners)
 
 
 		# by year
@@ -272,7 +273,7 @@ load_all() # loads functions
 			bcp = predict(bc,pI) 
 			xyz = cbind(baseLine,z=bcp)
 			corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
-			EAmap( xyz, fn=paste("lobster.biocl.pred",Years[i],sep='.'), annot=Years[i],loc="output",corners=corners, display=T)
+			EAmap( xyz, fn=paste("lobster.biocl.pred",Years[i],sep='.'), annot=Years[i],loc="output",corners=corners)
 		}
 
 
@@ -304,7 +305,7 @@ load_all() # loads functions
 		bcp = predict(Mo,pI,type='response') 
 		xyz = cbind(baseLine,z=bcp)
 		corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
-		EAmap( xyz, fn="lobster.gambi.pred", loc="output",corners=corners, display=T)
+		EAmap( xyz, fn="lobster.gambi.pred", loc="output",corners=corners)
 
 	####################################
 	# 
@@ -328,7 +329,7 @@ load_all() # loads functions
 			bcp = predict(Mo,pI,type='response') 
 			xyz = cbind(baseLine,z=bcp)
 			corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
-			EAmap( xyz, fn=paste("lobster.gambi.pred",Years[i],sep='.'), annot=Years[i],loc="output",corners=corners, display=T)
+			EAmap( xyz, fn=paste("lobster.gambi.pred",Years[i],sep='.'), annot=Years[i],loc="output",corners=corners)
 		}
 
 
