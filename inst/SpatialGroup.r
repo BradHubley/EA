@@ -240,7 +240,6 @@ load_all() # loads functions
 		dat = silverhakeRV
 		dat = halibutRV
 		dat$Y = ifelse(dat$totwgt>0,1,0)
-		
 		dat$dyear = decimal_date(dat$sdate)
 		dat$t = dat$bottom_temperature
 
@@ -275,13 +274,47 @@ load_all() # loads functions
 
 
 	# GAM (generalized additive models)
+	
+	# Habitat models	
+		
+		dat = lobsterRV
+		dat = scallopRV
+		dat = silverhakeRV
+		dat = halibutRV
+		dat$Y = ifelse(dat$totwgt>0,1,0)
+		dat$dyear = decimal_date(dat$sdate)
+		dat$t = dat$bottom_temperature
+	
 	##  with space
 
-	    Mf = formula( Y ~ s(dyear) + s(t) +  s(z) + s(dZ) + s(plon, plat)  )
+	    Mf = formula( Y ~ s(t) +  s(z) + s(dZ) + s(ddZ) + s(plon, plat)  )
+
+	    Md = dat[,c('plon','plat','t','z','dZ','ddZ','Y')]
+
+		Mo = gam( Mf, data=Md, family=binomial())
+		summary(Mo)
+
+
+		pI = predSpace[,c('plon','plat','tmean.climatology','z','dZ','ddZ')]
+		names(pI)[3] = 't'
+		bcp = predict(Mo,pI,type='response') 
+		xyz = cbind(baseLine,z=bcp)
+		corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
+		EAmap( xyz, fn="lobster.gambi.pred", loc="output",corners=corners, display=T)
+
+	####################################
+	# 
+	#	to incorporate into stock assessment: Use habitat layer to create strata
+
+
+	##  with space and time 
+
+	    Mf = formula( Y ~ s(dyear) + s(t) +  s(z) + s(dZ) + s(ddZ) + s(plon, plat)  )
 
 	    Md = dat[,c('plon','plat','dyear','t','z','dZ','ddZ','Y')]
 
 		Mo = gam( Mf, data=Md, family=binomial())
+		summary(Mo)
 
 
 		for(i in 1:length(Years)){
