@@ -1,6 +1,6 @@
 #' @export 
 
-  EAmap = function( xyz, depths=T, pts=NULL, colpts=F, annot=NULL, annot.cex=2.2, scalebar = T, projection = "utm20", col.regions=T, datascale=seq(0,1,l=10), at=datascale,
+  EAmap = function( xyz, depths=T, pts=NULL, colpts=F, annot=NULL, annot.cex=2.2, scalebar = T, projection = "utm20", col.regions=T, datascale=seq(0,1,l=50), at=datascale,
                 fn=paste("map", trunc(runif(1)*1e8), sep=""), loc=tempdir(), corners=NULL, rez=c(1,1), display=F, pt.cex=0.5, 
                 pt.pch=16, pt.col='black',colorkey=NULL, fill=T, log.variable=F, interpolation=F, add.zeros=F, theta=50, rev=F, ... ) {
 

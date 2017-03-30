@@ -151,7 +151,7 @@ setwd("/home/hubleyb/bio/EA/")
     spatial = indicators.lookup( p=p, DS="spatial", locsmap=locsmap)
 
     # join with dataset and save a csv
-    lobsterRV = cbind( lobsterRV,  btemp,  spatial, spatial.annual)
+    lobsterRV = cbind( lobsterRV[,-which(names(lobsterRV)=='z')],  btemp,  spatial[,-which(names(spatial)%in%c('plon','plat'))],spatial.annual)
 	write.csv(lobsterRV,"data/lobsterRV.csv")
 
 
@@ -169,7 +169,7 @@ setwd("/home/hubleyb/bio/EA/")
       
 
     # join with dataset and save a csv
-    scallopRV = cbind( scallopRV,  btemp,  spatial, spatial.annual)
+    scallopRV = cbind( scallopRV[,-which(names(scallopRV)=='z')],  btemp,  spatial[,-which(names(spatial)%in%c('plon','plat'))], spatial.annual)
 	write.csv(scallopRV,"data/scallopRV.csv")
 
 
@@ -187,7 +187,7 @@ setwd("/home/hubleyb/bio/EA/")
       
 
     # join with dataset and save a csv
-    silverhakeRV = cbind( silverhakeRV,  btemp,  spatial, spatial.annual)
+    silverhakeRV = cbind( silverhakeRV[,-which(names(silverhakeRV)=='z')],  btemp,  spatial[,-which(names(spatial)%in%c('plon','plat'))], spatial.annual)
 	write.csv(silverhakeRV,"data/silverhakeRV.csv")
 
 
@@ -205,7 +205,7 @@ setwd("/home/hubleyb/bio/EA/")
       
 
     # join with dataset and save a csv
-    halibutRV = cbind( halibutRV,  btemp,  spatial, spatial.annual)
+    halibutRV = cbind( halibutRV[,-which(names(halibutRV)=='z')],  btemp,  spatial[,-which(names(spatial)%in%c('plon','plat'))], spatial.annual)
 	write.csv(halibutRV,"data/halibutRV.csv")
 
 
