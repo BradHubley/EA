@@ -25,6 +25,8 @@
 setwd("/home/hubleyb/bio/EA/")
 
 # basic R packages
+library(sp)
+library(rgdal)
 library(dismo)
 library(mgcv)
 library(fields)
