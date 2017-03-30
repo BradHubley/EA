@@ -37,6 +37,8 @@ library(devtools)
 
 # gitHub R packages
 library(TMB) # https://github.com/kaskr/adcomp, don't worry about this one right now
+library(bio.base) # https://github.com/Beothuk/bio.base
+#to install: install_github("Beothuk/bio.base")
 library(bio.utilities) # https://github.com/Beothuk/bio.utilities
 #to install: install_github("Beothuk/bio.utilities")
 
