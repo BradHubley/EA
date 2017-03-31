@@ -39,10 +39,10 @@ library(lubridate)
 library(devtools)
 
 # gitHub R packages
-library(TMB) # https://github.com/kaskr/adcomp, don't worry about this one right now
-library(bio.base) # https://github.com/Beothuk/bio.base
+#library(TMB) # https://github.com/kaskr/adcomp, don't worry about this one right now
+#library(bio.base) # https://github.com/Beothuk/bio.base
 #to install: install_github("Beothuk/bio.base")
-library(bio.utilities) # https://github.com/Beothuk/bio.utilities
+#library(bio.utilities) # https://github.com/Beothuk/bio.utilities
 #to install: install_github("Beothuk/bio.utilities")
 
 
@@ -292,7 +292,7 @@ load_all() # loads functions
 	
 	##  with space
 
-	    Mf = formula( Y ~ s(t) +  s(z) + s(dZ) + s(ddZ) + s(plon, plat)  )
+	    Mf = formula( Y ~ s(t) +  s(z) + s(ddZ) + s(dZ) + s(plon, plat)  )
 
 	    Md = dat[,c('plon','plat','t','z','dZ','ddZ','Y')]
 
