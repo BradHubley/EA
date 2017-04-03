@@ -134,7 +134,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Slope", loc="output", datascale=datascale , corners=corners,log.variable=T)
+	EAmap( xyz, fn="Slope", loc="output", datascale=datascale , corners=corners,log.variable=T,save=T)
 
 	# Curvature
 	xyz = predSpace[c('plon','plat','ddZ')]
@@ -143,7 +143,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Curvature", loc="output", datascale=datascale , corners=corners,log.variable=T)
+	EAmap( xyz, fn="Curvature", loc="output", datascale=datascale , corners=corners,log.variable=T,save=T)
 
   
 
@@ -156,7 +156,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 		corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="Grain.Size", loc="output", datascale=datascale , corners=corners)
+	EAmap( xyz, fn="Grain.Size", loc="output", datascale=datascale , corners=corners,save=T)
 
 
 	# Temperature
@@ -168,7 +168,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tmean.climatology", loc="output", datascale=datascale , corners=corners)
+	EAmap( xyz, fn="tmean.climatology", loc="output", datascale=datascale , corners=corners,save=T)
 
 	# Climatology sd
 	xyz = predSpace[c('plon','plat','tsd.climatology')]
@@ -177,7 +177,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tsd.climatology", loc="output", datascale=datascale , corners=corners)
+	EAmap( xyz, fn="tsd.climatology", loc="output", datascale=datascale , corners=corners,save=T)
 
 	# Climatology min
 	xyz = predSpace[c('plon','plat','tmin.climatology')]
@@ -186,7 +186,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tmin.climatology", loc="output", datascale=datascale , corners=corners)
+	EAmap( xyz, fn="tmin.climatology", loc="output", datascale=datascale , corners=corners,save=T)
 
 	# Climatology max
 	xyz = predSpace[c('plon','plat','tmax.climatology')]
@@ -195,7 +195,7 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="tmax.climatology", loc="output", datascale=datascale , corners=corners)
+	EAmap( xyz, fn="tmax.climatology", loc="output", datascale=datascale , corners=corners,save=T)
 
 	# Climatology amplitude
 	xyz = predSpace[c('plon','plat','amplitude.climatology')]
@@ -204,7 +204,23 @@ load_all() # loads functions
 	datascale = seq(datarange[1],datarange[2],l=50)
 	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
 
-	EAmap( xyz, fn="amplitude.climatology", loc="output", datascale=datascale , corners=corners)
+	EAmap( xyz, fn="amplitude.climatology", loc="output", datascale=datascale , corners=corners,save=T)
+
+
+
+	# Annual means
+	xyz = subset(predSpaceTime,select=c('plon','plat','t'))
+	datarange = quantile(xyz[,3],probs=c(0.01,0.99),na.rm=T)
+	datascale = seq(datarange[1],datarange[2],l=50)
+	corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
+
+	for(i in Years){
+
+		xyz = subset(predSpaceTime,year(timestamp)==i,c('plon','plat','t'))
+
+		EAmap( xyz, fn=paste("temperatures.bottom",i,sep='.'), loc="output", datascale=datascale , corners=corners,save=T)
+
+	}
 
 
 ## 	Species distribution / Habitat suitability models
@@ -287,7 +303,7 @@ load_all() # loads functions
 		dat = silverhakeRV
 		dat = halibutRV
 		dat$Y = ifelse(dat$totwgt>0,1,0)
-		dat$dyear = decimal_date(dat$sdate)
+		dat$dyear = decimal_date(as.Date(dat$sdate))
 		dat$t = dat$bottom_temperature
 	
 	##  with space
@@ -333,13 +349,31 @@ load_all() # loads functions
 		}
 
 
-
-
-
-
-
-
 ##  Spatial Abundance models
+
+	    Mf = formula( totwgt ~ s(dyear) + s(t) +  s(z) + s(dZ) + s(ddZ) + s(plon, plat)  )
+
+	    Md = dat[,c('plon','plat','dyear','t','z','dZ','ddZ','totwgt')]
+
+		Mo = gam( Mf, data=Md, family=gaussian(link='log'))
+		summary(Mo)
+
+
+		for(i in 1:length(Years)){
+			pdat = subset(predSpaceTime,year(timestamp)==Years[i])
+			pdat$dyear = decimal_date(pdat$timestamp)
+			pI = cbind(pdat[,c('plon','plat','dyear','t')],predSpace[,c('z','dZ','ddZ')])
+			bcp = predict(Mo,pI,type='response') 
+			xyz = cbind(baseLine,z=bcp)
+			corners = data.frame(lon=c(-67.54,-56.5),lat=c(41,47.2))
+			EAmap( xyz, fn=paste("lobster.gambi.pred",Years[i],sep='.'), annot=Years[i],loc="output",corners=corners)
+		}
+
+
+
+
+
+##  Formula for global (1st pass) snowcrab LBM
 
 
 	modelformula = formula( paste( 
@@ -351,3 +385,5 @@ load_all() # loads functions
 
 
 ##  Spatial-temporal population dynamics
+
+# see 'https://github.com/James-Thorson'
